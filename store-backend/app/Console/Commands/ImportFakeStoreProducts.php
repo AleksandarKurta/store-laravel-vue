@@ -2,12 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Services\ProductImportServiceInterface;
+use Illuminate\Console\Command;
 
 class ImportFakeStoreProducts extends Command
 {
     protected $signature = 'import:fake-store-products {--fresh : Delete all existing products before import}';
+
     protected $description = 'Import products from Fake Store API into the local database';
 
     protected ProductImportServiceInterface $importService;
@@ -32,6 +33,7 @@ class ImportFakeStoreProducts extends Command
             $this->info('Import completed successfully.');
         } catch (\Exception $e) {
             $this->error("Error: {$e->getMessage()}");
+
             return 1;
         }
 

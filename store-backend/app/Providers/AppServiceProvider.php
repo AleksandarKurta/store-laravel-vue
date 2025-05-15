@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Services\ProductImportServiceInterface;
 use App\Services\FakeStoreProductImportService;
+use App\Services\ProductImportServiceInterface;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
