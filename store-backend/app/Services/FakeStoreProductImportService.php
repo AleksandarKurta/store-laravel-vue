@@ -2,12 +2,19 @@
 
 namespace App\Services;
 
+use App\DTOs\ProductDTO;
+use App\Exceptions\Product\ProductImportFailedException;
 use App\Models\Product;
 use App\Models\ProductRating;
+use App\Repositories\ProductRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 
 class FakeStoreProductImportService implements ProductImportServiceInterface
 {
+    public function __construct(
+        private readonly ProductRepositoryInterface $productRepository
+    ) {}
+
     public function import(bool $fresh = false): array
     {
         if ($fresh) {
@@ -18,31 +25,15 @@ class FakeStoreProductImportService implements ProductImportServiceInterface
         $response = Http::get('https://fakestoreapi.com/products');
 
         if ($response->failed()) {
-            throw new \Exception('Failed to fetch products from API');
+            throw new ProductImportFailedException('Failed to fetch products from Fake Store API.');
         }
 
         $imported = [];
 
         foreach ($response->json() as $apiProduct) {
-            $product = Product::updateOrCreate(
-                ['external_id' => $apiProduct['id']],
-                [
-                    'title' => $apiProduct['title'],
-                    'price' => $apiProduct['price'],
-                    'description' => $apiProduct['description'],
-                    'category' => $apiProduct['category'],
-                    'image' => $apiProduct['image'],
-                    'synced_at' => now(),
-                ]
-            );
+            $dto = ProductDTO::fromArray($apiProduct);
 
-            $product->rating()->updateOrCreate(
-                ['product_id' => $product->id],
-                [
-                    'rate' => $apiProduct['rating']['rate'],
-                    'count' => $apiProduct['rating']['count'],
-                ]
-            );
+            $product = $this->productRepository->save($dto);
 
             $imported[] = $product->title;
         }

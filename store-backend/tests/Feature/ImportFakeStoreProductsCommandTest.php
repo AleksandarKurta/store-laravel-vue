@@ -37,6 +37,11 @@ class ImportFakeStoreProductsCommandTest extends TestCase
             'external_id' => 10,
             'title' => 'CLI Product',
         ]);
+
+        $this->assertDatabaseHas('product_ratings', [
+            'rate' => 4.9,
+            'count' => 200,
+        ]);
     }
 
     public function test_command_with_fresh_deletes_old_data()
