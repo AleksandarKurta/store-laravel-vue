@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
 
 class ImportFakeStoreProductsCommandTest extends TestCase
 {
@@ -23,10 +23,10 @@ class ImportFakeStoreProductsCommandTest extends TestCase
                     'image' => 'http://example.com/img.jpg',
                     'rating' => [
                         'rate' => 4.9,
-                        'count' => 200
-                    ]
-                ]
-            ])
+                        'count' => 200,
+                    ],
+                ],
+            ]),
         ]);
 
         $this->artisan('import:fake-store-products')
@@ -35,14 +35,19 @@ class ImportFakeStoreProductsCommandTest extends TestCase
 
         $this->assertDatabaseHas('products', [
             'external_id' => 10,
-            'title' => 'CLI Product'
+            'title' => 'CLI Product',
+        ]);
+
+        $this->assertDatabaseHas('product_ratings', [
+            'rate' => 4.9,
+            'count' => 200,
         ]);
     }
 
     public function test_command_with_fresh_deletes_old_data()
     {
         Http::fake([
-            'fakestoreapi.com/products' => Http::response([])
+            'fakestoreapi.com/products' => Http::response([]),
         ]);
 
         $this->artisan('import:fake-store-products --fresh')
