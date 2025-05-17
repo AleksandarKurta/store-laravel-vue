@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use App\Models\Product;
-use App\Repositories\ProductRepository;
-use App\Services\FakeStoreProductImportService;
+use App\Repositories\Product\ProductRepository;
+use App\Services\Product\FakeStoreProductImportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
