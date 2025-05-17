@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\DTOs;
 
-use App\DTOs\ProductRatingDTO;
+use App\DTOs\Product\ProductRatingDTO;
 use PHPUnit\Framework\TestCase;
 
 class ProductRatingDTOTest extends TestCase
