@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Product;
 
-use App\DTOs\ProductDTO;
+use App\DTOs\Product\ProductDTO;
 use App\Exceptions\Product\ProductImportFailedException;
 use App\Models\Product;
 use App\Models\ProductRating;
-use App\Repositories\ProductRepositoryInterface;
+use App\Repositories\Product\ProductRepositoryInterface;
 use Illuminate\Support\Facades\Http;
 
 class FakeStoreProductImportService implements ProductImportServiceInterface
