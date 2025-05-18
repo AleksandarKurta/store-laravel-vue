@@ -8,6 +8,7 @@ use App\Exceptions\Product\ProductUpdateFailedException;
 use App\Models\Product;
 use App\Repositories\Product\ProductRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Mockery;
 use Tests\TestCase;
 
@@ -82,6 +83,49 @@ class ProductRepositoryTest extends TestCase
         $mockedProduct->shouldReceive('update')->andReturn(false);
 
         $repository->updateProduct($mockedProduct, $dto);
+    }
+
+    public function test_fetch_products_returns_limited_records_with_selected_columns(): void
+    {
+        Product::factory()->count(30)->create();
+
+        $repository = new ProductRepository;
+
+        $result = $repository->fetchProducts(10);
+
+        $this->assertCount(10, $result);
+
+        $product = $result->first();
+        $this->assertArrayHasKey('id', $product->getAttributes());
+        $this->assertArrayHasKey('title', $product->getAttributes());
+        $this->assertArrayHasKey('price', $product->getAttributes());
+        $this->assertArrayHasKey('image', $product->getAttributes());
+        $this->assertArrayHasKey('category', $product->getAttributes());
+
+        $this->assertArrayNotHasKey('created_at', $product->getAttributes());
+        $this->assertArrayNotHasKey('updated_at', $product->getAttributes());
+    }
+
+    public function test_fetch_products_is_cached()
+    {
+        Cache::shouldReceive('remember')
+            ->once()
+            ->with(
+                'products_fetch',
+                \Mockery::type(\DateTimeInterface::class),
+                \Mockery::on(function ($closure) {
+                    $result = $closure();
+
+                    return $result instanceof \Illuminate\Support\Collection;
+                })
+            )
+            ->andReturn(collect());
+
+        $repository = new ProductRepository;
+
+        $repository->fetchProducts(10);
+
+        $this->assertTrue(true); // Prevents risky test warning
     }
 
     protected function tearDown(): void
