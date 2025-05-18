@@ -31,12 +31,12 @@ class UpdateProductTest extends TestCase
             'price' => 110.00,
         ];
 
-        $response = $this->putJson("/api/update/product/{$product->id}", $payload);
+        $response = $this->putJson(route('product.update', $product->id), $payload);
 
         $response->assertOk()
             ->assertJson([
                 'message' => 'Product updated successfully',
-                'data' => [
+                'product' => [
                     'id' => $product->id,
                     'title' => 'New Title',
                     'description' => 'New description',
@@ -58,7 +58,7 @@ class UpdateProductTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $response = $this->putJson("/api/update/product/{$product->id}", [
+        $response = $this->putJson(route('product.update', $product->id), [
             'title' => 'Test title',
             'description' => 'Test description',
             'image' => 'http://example.com/fake.jpg',
@@ -75,7 +75,7 @@ class UpdateProductTest extends TestCase
 
         $product = Product::factory()->create();
 
-        $response = $this->putJson("/api/update/product/{$product->id}", [
+        $response = $this->putJson(route('product.update', $product->id), [
             'title' => '',
             'description' => null,
             'image' => null,
