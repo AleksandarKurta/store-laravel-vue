@@ -18,7 +18,7 @@ describe('fetchProducts', () => {
       {
         id: 1,
         title: 'Test Product',
-        price: '19.99',
+        price: 19.99,
         description: 'Test Description',
         category: 'electronics',
         image: 'http://example.com/product.jpg',

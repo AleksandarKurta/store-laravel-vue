@@ -1,8 +1,9 @@
 <template>
   <div class="container py-4">
-    <div class="row g-4">
+    <div v-if="products.length" class="row g-4">
       <ProductCard v-for="product in products" :key="product.id" :product="product" />
     </div>
+    <div v-else>No products found</div>
   </div>
 </template>
 
