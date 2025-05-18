@@ -5,7 +5,11 @@ import type { Product } from '@/types/Product'
 
 vi.mock('axios')
 const mockedAxios = axios as unknown as {
-  get: (url: string) => Promise<{ data: Product[] }>
+  get: (url: string) => Promise<{
+    data: {
+      products: Product[]
+    }
+  }>
 }
 
 describe('fetchProducts', () => {
@@ -21,7 +25,11 @@ describe('fetchProducts', () => {
       },
     ]
 
-    mockedAxios.get = vi.fn().mockResolvedValue({ data: mockProducts })
+    mockedAxios.get = vi.fn().mockResolvedValue({
+      data: {
+        products: mockProducts,
+      },
+    })
 
     const products = await fetchProducts()
 
