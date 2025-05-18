@@ -1,32 +1,51 @@
-import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ProductCard from '@/components/product/ProductCard.vue'
-import type { Product } from '@/types/Product'
+import { useCartStore } from '@/stores/cart'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// Mock cart store
+vi.mock('axios')
+vi.mock('@/stores/cart', () => ({
+  useCartStore: vi.fn(),
+}))
 
 describe('ProductCard.vue', () => {
-  const product: Product = {
-    id: 1,
+  let cartStoreMock: ReturnType<typeof useCartStore>
+
+  beforeEach(() => {
+    cartStoreMock = {
+      addToCart: vi.fn(),
+    } as any
+    ;(useCartStore as vi.Mock).mockReturnValue(cartStoreMock)
+  })
+
+  const product = {
+    id: 123,
     title: 'Test Product',
-    price: '19.99',
+    category: 'Category A',
     description: 'Test description',
-    category: 'Electronics',
+    price: 19.99,
     image: 'https://example.com/image.jpg',
   }
 
-  it('renders product title, category, price and image', () => {
+  it('renders product info correctly', () => {
     const wrapper = mount(ProductCard, {
-      props: {
-        product,
-      },
+      props: { product },
     })
 
-    expect(wrapper.text()).toContain(product.title)
-    expect(wrapper.text()).toContain(product.category)
-    expect(wrapper.text()).toContain('$19.99')
+    expect(wrapper.find('h5.card-title').text()).toBe(product.title)
+    expect(wrapper.find('p.text-muted').text()).toBe(product.category)
+    expect(wrapper.find('p.fw-bold').text()).toBe(`$${product.price.toFixed(2)}`)
+    expect(wrapper.find('img').attributes('src')).toBe(product.image)
+  })
 
-    const img = wrapper.find('img')
-    expect(img.exists()).toBe(true)
-    expect(img.attributes('src')).toBe(product.image)
-    expect(img.attributes('alt')).toBe('Product image')
+  it('calls addToCart on button click', async () => {
+    const wrapper = mount(ProductCard, {
+      props: { product },
+    })
+
+    await wrapper.find('button').trigger('click')
+
+    expect(cartStoreMock.addToCart).toHaveBeenCalledWith(product.id)
   })
 })
