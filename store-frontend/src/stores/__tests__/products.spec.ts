@@ -18,7 +18,7 @@ describe('useProductsStore', () => {
       {
         id: 1,
         title: 'Product 1',
-        price: '9.99',
+        price: 9.99,
         description: 'Description',
         category: 'Category',
         image: 'img.jpg',

@@ -7,6 +7,7 @@ import ProductCard from '@/components/product/ProductCard.vue'
 import type { Product } from '@/types/Product'
 import type { Pinia } from 'pinia'
 
+vi.mock('axios')
 describe('ProductsList.vue', () => {
   let pinia: Pinia
 
@@ -31,8 +32,8 @@ describe('ProductsList.vue', () => {
 
   it('renders ProductCard components for each product', async () => {
     const mockProducts = [
-      { id: 1, title: 'Product 1', price: '10', category: '', image: '', description: '' },
-      { id: 2, title: 'Product 2', price: '20', category: '', image: '', description: '' },
+      { id: 1, title: 'Product 1', price: 10, category: '', image: '', description: '' },
+      { id: 2, title: 'Product 2', price: 20, category: '', image: '', description: '' },
     ]
 
     const wrapper = mount(ProductsList, {
