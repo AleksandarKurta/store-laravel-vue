@@ -8,6 +8,8 @@ use App\Repositories\Product\ProductRepository;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Services\Cart\AddToCartService;
 use App\Services\Cart\AddToCartServiceInterface;
+use App\Services\Cart\GetCartService;
+use App\Services\Cart\GetCartServiceInterface;
 use App\Services\Product\FakeStoreProductImportService;
 use App\Services\Product\ProductImportServiceInterface;
 use App\Services\Product\ProductUpdaterService;
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductUpdaterServiceInterface::class, ProductUpdaterService::class);
         $this->app->bind(AddToCartServiceInterface::class, AddToCartService::class);
         $this->app->bind(CartRepositoryInterface::class, CartRepository::class);
+        $this->app->bind(GetCartServiceInterface::class, GetCartService::class);
     }
 
     public function boot(): void

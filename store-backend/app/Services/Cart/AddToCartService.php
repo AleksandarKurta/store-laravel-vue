@@ -3,6 +3,7 @@
 namespace App\Services\Cart;
 
 use App\Exceptions\Cart\CartUpdateFailedException;
+use App\Models\Cart;
 use App\Repositories\Cart\CartRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
@@ -12,7 +13,7 @@ class AddToCartService implements AddToCartServiceInterface
         private CartRepositoryInterface $cartRepository
     ) {}
 
-    public function addToCart(?int $userId, array $data): void
+    public function addToCart(?int $userId, array $data): Cart
     {
         try {
             DB::beginTransaction();
@@ -35,5 +36,7 @@ class AddToCartService implements AddToCartServiceInterface
 
             throw new CartUpdateFailedException('Failed to add product to cart');
         }
+
+        return $cart->load('items.product');
     }
 }

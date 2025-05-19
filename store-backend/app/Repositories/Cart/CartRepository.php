@@ -3,6 +3,7 @@
 namespace App\Repositories\Cart;
 
 use App\Models\Cart;
+use Illuminate\Support\Facades\Cache;
 
 class CartRepository implements CartRepositoryInterface
 {
@@ -26,5 +27,11 @@ class CartRepository implements CartRepositoryInterface
                 'quantity' => $quantity,
             ]);
         }
+    }
+
+    public function getCartByToken(string $cartToken):? Cart {
+        return Cart::with('items.product')
+            ->where('cart_token', $cartToken)
+            ->first();
     }
 }

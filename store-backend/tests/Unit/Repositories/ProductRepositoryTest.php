@@ -33,7 +33,10 @@ class ProductRepositoryTest extends TestCase
 
         $productDto = ProductDTO::fromArray($product);
         $repository = new ProductRepository;
-        $repository->save($productDto);
+
+        $repository->saveProduct($productDto);
+
+        $repository->saveRating($product['id'], $productDto->rating);
 
         $this->assertDatabaseHas('products', [
             'external_id' => 1,

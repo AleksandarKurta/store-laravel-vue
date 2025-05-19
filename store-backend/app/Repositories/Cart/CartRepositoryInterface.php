@@ -9,4 +9,6 @@ interface CartRepositoryInterface
     public function findOrCreateCart(?int $userId, string $cartToken, string $sessionId): Cart;
 
     public function addOrUpdateCartItem(Cart $cart, int $productId, int $quantity): void;
+
+    public function getCartByToken(string $cartToken):? Cart;
 }
