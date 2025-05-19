@@ -2,7 +2,9 @@
 
 namespace App\Services\Cart;
 
+use App\Models\Cart;
+
 interface AddToCartServiceInterface
 {
-    public function addToCart(?int $userId, array $data): void;
+    public function addToCart(?int $userId, array $data): Cart;
 }

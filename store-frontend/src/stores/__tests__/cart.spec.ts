@@ -1,69 +1,87 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useCartStore } from '@/stores/cart'
-import { vi, describe, it, expect, beforeEach } from 'vitest'
-import { addProductsToCart } from '@/api/cart'
+import { addProductsToCart, fetchCartApi } from '@/api/cart'
+import type { Cart } from '@/types/api/Cart'
 
 vi.mock('@/api/cart', () => ({
   addProductsToCart: vi.fn(),
+  fetchCartApi: vi.fn(),
 }))
 
-describe('Cart Store', () => {
+const mockCart: Cart = {
+  items: [
+    { productId: 1, quantity: 2 },
+    { productId: 2, quantity: 1 },
+  ],
+  total_price: 29.97,
+  total_quantity: 3,
+}
+
+describe('cartStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    vi.clearAllMocks()
     localStorage.clear()
-    vi.resetAllMocks()
   })
 
-  it('generates a cart token if not exists', () => {
+  it('generates and saves cart token if not in localStorage', () => {
     const store = useCartStore()
     const token = store.getOrCreateCartToken()
-    const storedToken = localStorage.getItem('cart_token')
 
     expect(token).toBeDefined()
-    expect(token).toBe(storedToken)
+    expect(localStorage.getItem('cart_token')).toBe(token)
   })
 
-  it('uses existing cart token if already present', () => {
-    const fakeToken = 'test-token'
-    localStorage.setItem('cart_token', fakeToken)
-
+  it('uses existing cart token from localStorage', () => {
+    localStorage.setItem('cart_token', 'existing-token')
     const store = useCartStore()
-    const token = store.getOrCreateCartToken()
 
-    expect(token).toBe(fakeToken)
+    expect(store.cartToken).toBeDefined()
+    expect(store.cartToken).toBe('existing-token')
   })
 
-  it('adds new product to cartItems and calls API', async () => {
+  it('fetchCart updates cart state on success', async () => {
+    ;(fetchCartApi as vi.Mock).mockResolvedValue({ data: mockCart })
+
     const store = useCartStore()
-    const productId = 1
-    const quantity = 2
+    await store.fetchCart()
 
-    await store.addToCart(productId, quantity)
-
-    expect(store.cartItems.length).toBe(1)
-    expect(store.cartItems[0]).toEqual({ productId, quantity })
-    expect(addProductsToCart).toHaveBeenCalledWith(productId, quantity, expect.any(String))
+    expect(fetchCartApi).toHaveBeenCalledWith(store.cartToken)
+    expect(store.cartItems).toEqual(mockCart.items)
+    expect(store.totalPrice).toBe(mockCart.total_price)
+    expect(store.cartItemCount).toBe(mockCart.total_quantity)
     expect(store.error).toBeNull()
   })
 
-  it('increments quantity if product already in cart', async () => {
+  it('addToCart updates cart state on success', async () => {
+    ;(addProductsToCart as vi.Mock).mockResolvedValue({ data: mockCart })
+
     const store = useCartStore()
-    const productId = 1
+    await store.addToCart(1, 2)
 
-    await store.addToCart(productId, 1)
-    await store.addToCart(productId, 2)
-
-    expect(store.cartItems.length).toBe(1)
-    expect(store.cartItems[0].quantity).toBe(3)
+    expect(addProductsToCart).toHaveBeenCalledWith(1, 2, store.cartToken)
+    expect(store.cartItems).toEqual(mockCart.items)
+    expect(store.totalPrice).toBe(mockCart.total_price)
+    expect(store.cartItemCount).toBe(mockCart.total_quantity)
+    expect(store.error).toBeNull()
   })
 
-  it('sets error if API fails', async () => {
+  it('handles error in fetchCart', async () => {
+    ;(fetchCartApi as vi.Mock).mockRejectedValue(new Error('API fail'))
+
     const store = useCartStore()
+    await store.fetchCart()
 
-    vi.mocked(addProductsToCart).mockRejectedValue(new Error('API error'))
+    expect(store.error).toBe('API fail')
+  })
 
-    await store.addToCart(1, 1)
+  it('handles error in addToCart', async () => {
+    ;(addProductsToCart as vi.Mock).mockRejectedValue(new Error('Failed'))
 
-    expect(store.error).toBe('API error')
+    const store = useCartStore()
+    await store.addToCart(1)
+
+    expect(store.error).toBe('Failed')
   })
 })

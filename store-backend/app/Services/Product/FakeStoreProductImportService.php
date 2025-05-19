@@ -7,6 +7,7 @@ use App\Exceptions\Product\ProductImportFailedException;
 use App\Models\Product;
 use App\Models\ProductRating;
 use App\Repositories\Product\ProductRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class FakeStoreProductImportService implements ProductImportServiceInterface
@@ -30,12 +31,24 @@ class FakeStoreProductImportService implements ProductImportServiceInterface
 
         $imported = [];
 
-        foreach ($response->json() as $apiProduct) {
-            $dto = ProductDTO::fromArray($apiProduct);
+        try {
+            DB::beginTransaction();
 
-            $product = $this->productRepository->save($dto);
+            foreach ($response->json() as $apiProduct) {
+                $dto = ProductDTO::fromArray($apiProduct);
 
-            $imported[] = $product->title;
+                $product = $this->productRepository->saveProduct($dto);
+
+                $this->productRepository->saveRating($product->id, $dto->rating);
+
+                $imported[] = $product->title;
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            throw new ProductImportFailedException('Failed to import product and rating.');
         }
 
         return $imported;

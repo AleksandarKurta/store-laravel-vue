@@ -13,15 +13,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ProductRepository implements ProductRepositoryInterface
 {
-    public function save(ProductDTO $dto): Product
-    {
-        $product = $this->saveProduct($dto);
-        $this->saveRating($product->id, $dto->rating);
-
-        return $product;
-    }
-
-    private function saveProduct(ProductDTO $dto): Product
+    public function saveProduct(ProductDTO $dto): Product
     {
         return Product::updateOrCreate(
             ['external_id' => $dto->externalId],
@@ -36,7 +28,7 @@ class ProductRepository implements ProductRepositoryInterface
         );
     }
 
-    private function saveRating(int $productId, ProductRatingDTO $rating): void
+    public function saveRating(int $productId, ProductRatingDTO $rating): void
     {
         ProductRating::updateOrCreate(
             ['product_id' => $productId],
@@ -65,12 +57,8 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function fetchProducts(int $limit = 20): Collection
     {
-        $cacheKey = 'products_fetch';
-
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($limit) {
-            return Product::select(['id', 'title', 'price', 'image', 'category'])
+        return Product::select(['id', 'title', 'price', 'image', 'category'])
                 ->take($limit)
                 ->get();
-        });
     }
 }
