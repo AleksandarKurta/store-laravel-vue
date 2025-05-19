@@ -11,3 +11,9 @@ export const addProductsToCart = async (productId: number, quantity: number, car
 
   return response.data
 }
+
+export const fetchCartApi = async (cartToken: string) => {
+  const response = await axios.get(`${baseURL}/cart/get?cart_token=${cartToken}`)
+
+  return response.data
+}

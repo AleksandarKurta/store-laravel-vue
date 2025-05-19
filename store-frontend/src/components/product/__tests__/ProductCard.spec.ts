@@ -3,7 +3,6 @@ import ProductCard from '@/components/product/ProductCard.vue'
 import { useCartStore } from '@/stores/cart'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// Mock cart store
 vi.mock('axios')
 vi.mock('@/stores/cart', () => ({
   useCartStore: vi.fn(),
