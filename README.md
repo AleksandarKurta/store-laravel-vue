@@ -144,3 +144,76 @@ npm run test:unit
 * On first visit, a UUID cart token is generated and stored in `localStorage`.
 * All cart-related API requests use this token.
 
+### 🔒 Authenticated Admin Actions
+
+* Product updates (Sanctum-protected)
+
+---
+
+## 🔄 Product Update API (Authenticated)
+
+### Endpoint
+
+```
+PUT /api/products/{id}
+```
+
+### Headers
+
+| Header        | Value                             |
+| ------------- | --------------------------------- |
+| Authorization | Bearer YOUR\_SANCTUM\_TOKEN\_HERE |
+| Accept        | application/json                  |
+| Content-Type  | application/json                  |
+
+### Request Body Example
+
+```json
+{
+  "title": "Updated Product Title",
+  "price": 49.99,
+  "description": "Updated description.",
+  "category": "electronics"
+}
+```
+
+### How to Get a Sanctum Token
+
+php artisan db:seed --class=UserSeeder
+
+Copy the token and set it as Bearer in Postman
+
+### Example Request in Postman
+
+1. Set method: `PUT`
+2. URL: `http://localhost:8000/api/product/1`
+3. Headers:
+
+   * `Authorization`: Bearer YOUR\_TOKEN
+   * `Content-Type`: application/json
+4. Body (raw JSON):
+
+```json
+{
+  "title": "New iPhone 16",
+  "price": 1599,
+  "description": "The latest iPhone with AI",
+  "category": "electronics"
+}
+```
+
+### Response Example
+
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "New iPhone 16",
+    "price": "1599.00",
+    "description": "The latest iPhone with AI",
+    "category": "electronics",
+    "updated_at": "2025-05-19T12:00:00Z"
+  },
+  "message": "Product updated successfully"
+}
+``
