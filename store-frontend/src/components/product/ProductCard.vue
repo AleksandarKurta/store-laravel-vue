@@ -31,7 +31,7 @@ function handleAddToCart(productId: number) {
 
 defineProps<{ product: Product }>()
 </script>
-<style scopet>
+<style scoped>
 .card-title {
   height: 80px;
 }
