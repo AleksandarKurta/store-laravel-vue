@@ -216,4 +216,4 @@ Copy the token and set it as Bearer in Postman
   },
   "message": "Product updated successfully"
 }
-``
+```
