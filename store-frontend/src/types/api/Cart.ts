@@ -1,14 +1,10 @@
 export interface CartItem {
-  id: number
   product_id: number
   quantity: number
-  product: {
-    id: number
-    title: string
-    price: number
-    image: string
-    category: string
-  }
+  title: string
+  price: number
+  image: string
+  category: string
 }
 
 export interface Cart {
