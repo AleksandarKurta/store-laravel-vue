@@ -57,12 +57,8 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function fetchProducts(int $limit = 20): Collection
     {
-        $cacheKey = 'products_fetch';
-
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($limit) {
-            return Product::select(['id', 'title', 'price', 'image', 'category'])
+        return Product::select(['id', 'title', 'price', 'image', 'category'])
                 ->take($limit)
                 ->get();
-        });
     }
 }
